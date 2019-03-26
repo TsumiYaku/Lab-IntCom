@@ -1,5 +1,5 @@
 nbit = [4 6 8]; % Bit di quantizzazione
-V = 1; % Ampiezza massima dei segnali
+V = 0.5; % Ampiezza massima dei segnali
 
 % Registrazione audio
 fsr = 8000; % Frequenza di campionamento
@@ -37,17 +37,19 @@ for i = 1:length(nbit)
     % Spettro di potenza
     rpsd = abs(fft(sigrec)).^2;
     
-    subplot(1,2,1);
-    title('Spettro di potenza (voce registrata)');
+    subplot(3,2,2*(i-1)+1);
+    line = ['Spettro di potenza (voce registrata ', num2str(nbit(i)), ' bit)']
+    title(line);
     grid on
     hold on
     plot(fr, fftshift(rpsd));
     xlabel('f')
     
     % Densità di probabilità
-    subplot(1,2,2)
-    title('Densità di probabilità (voce registrata)')
+    subplot(3,2,2*(i-1)+2)
     histogram(rquants, M)
+    line = ['Densità di probabilità (voce registrata ', num2str(nbit(i)), ' bit)']
+    title(line)
     hold on
     
     % Analisi file audio
@@ -59,16 +61,18 @@ for i = 1:length(nbit)
     % Spettro di potenza
     fpsd = abs(fft(fquants)).^2;
     
-    subplot(1,2,1)
+    subplot(3,2,2*(i-1)+1)
     grid on
     hold on
     plot(ff, fftshift(fpsd));
     xlabel('f')
-    title('Spettro di potenza (file audio)');
+    line = ['Spettro di potenza (file audio ', num2str(nbit(i)), ' bit)']
+    title(line);
     
     % Densità di probabilità
-    subplot(1,2,2)
+    subplot(3,2,2*(i-1)+2)
     histogram(fquants, M)
+    line = ['Densità di probabilità (file audio ', num2str(nbit(i)), ' bit)']
+    title(line)
     hold on
-    title('Densità di probabilità (file audio)')
 end

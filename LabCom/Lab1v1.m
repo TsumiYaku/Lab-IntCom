@@ -24,7 +24,7 @@ ylabel('SNR')
 V = 1; % Ampiezza massima del segnale (da -V a +V)
 fc = 10e4 % Frequenza di campionamento (scelta arbitraria)
 Tc = 1/fc % Tempo di campionamento
-samples = 1e4; % Numero di campioni del segnale (arbitrario)
+samples = 1e5; % Numero di campioni del segnale (arbitrario)
 t = (0:1:samples-1)*Tc; % Valori asse dei tempi dei campioni del segnale
 sig = rand(1,samples); % Generazione del segnale
 sig = (sig-0.5)*2*V; % Normalizzazione del segnale (media nulla e varianza pari a V)
@@ -33,7 +33,7 @@ sig = (sig-0.5)*2*V; % Normalizzazione del segnale (media nulla e varianza pari 
 
 for i = 1:length(nbit)
     
-    % Quantizzazione
+    % Definizione partizioni quantizzazione
     
     M = 2^nbit(i); % Numero intervalli di quantizzazione
     DV = 2*V/M; % Passo di quantizzazione
@@ -46,22 +46,26 @@ for i = 1:length(nbit)
     % Codifica
     words = de2bi(index, nbit(i));
     
+    figure(2)
+    
     % Spettro di potenza
     psd = abs(fft(quants)).^2;
     f = (linspace(-1,1,samples))*fc % Valori trasformata asse delle frequenze
     
-    figure(2)
+    subplot(3,2,2*(i-1)+1)
     hold on
     grid on
     plot(f, fftshift(psd))
     xlabel('f')
     ylabel('Sx')
-    title('Spettro di potenza')
+    line = ['Spettro di potenza (', num2str(nbit(i)),' bit)'];
+    title(line)
     
     % Densità di probabilità
-    figure(3)
+    subplot(3,2,2*(i-1)+2)
     hold on
-    title('Densità di probabilità')
     histogram(quants, M)
+    line = ['Densità di probabilità (', num2str(nbit(i)), ' bit)'];
+    title(line)
 end
 
