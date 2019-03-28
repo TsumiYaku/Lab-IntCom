@@ -1,10 +1,8 @@
-nbit = [4 6 8]; % Bit di quantizzazione
-cases = length(nbit);
 V = 1; % Ampiezza massima dei segnali
-peA = logspace(-9,-1,1e3);
-peB = logspace(-9,-1,9);
-SNR = zeros(1,length(peB));
 
+figure(1)
+
+% Analisi voce registrata
 % Registrazione audio
 fsr = 8000; % Frequenza di campionamento
 Tr = 3; % Tempo di registrazione
@@ -12,16 +10,51 @@ Tr = 3; % Tempo di registrazione
 recorder = audiorecorder(fsr, 16, 1);
 recordblocking(recorder, Tr);
 sigrec = getaudiodata(recorder); % Segnale registrato
+sigrec = sigrec'; % Trasposto per compatibilità
+samples = length(sigrec); % Numero di campioni
 
-rsamples = length(sigrec); % Numero di campioni
-fr = linspace(-fsr/2, fsr/2, rsamples); % Valori asse delle frequenze
-    
+% Spettro di potenza
+psd = abs(fft(sigrec)).^2;
+fr = linspace(-fsr/2, fsr/2, samples); % Valori asse delle frequenze
 
-% Apertura file audio
-[sigfile, fsf] = audioread('record.wav');
+subplot(2,2,1);
+plot(fr, fftshift(psd));
+title('Spettro di potenza (voce registrata)');
+xlabel('f')
+grid on
+
+% Densità di probabilità
+subplot(2,2,2)
+histogram(sigrec, 30);
+title('Densità di probabilità (voce registrata)');
+
+% Analisi file audio
+% Apertura file
+[sigfile, fs] = audioread('record.wav');
+sigfile = sigfile'; % Trasposto per compatibilità
 fsamples = length(sigfile); % Numero di campioni
-Tf = fsamples * 1/fsf; % Durata del segnale
-ff = linspace(-fsf/2, fsf/2, fsamples); % Valori asse delle frequenze
+
+% Spettro di potenza
+psd = abs(fft(sigfile)).^2;
+f = linspace(-fs/2, fs/2, fsamples); % Valori asse delle frequenze
+
+subplot(2,2,3)
+plot(f, fftshift(psd));
+title('Spettro di potenza (file audio)');
+xlabel('f')
+grid on
+
+% Densità di probabilità
+subplot(2,2,4)
+histogram(sigfile, 30)
+title('Densità di probabilità (file audio)')
+
+% Calcolo delle SNR
+nbit = [4 6 8]; % Bit di quantizzazione
+peA = logspace(-9,-1,1e3); % Valori di probabilità (SNR teorica)
+peB = logspace(-9,-1,9); % Valori di probabilità (SNR segnale)
+
+figure(2)
 
 for i = 1:length(nbit)
     
@@ -30,44 +63,17 @@ for i = 1:length(nbit)
     DV = 2*V/M; % Passo di quantizzazione
     partition = -V+DV:DV:V-DV; % Partizione asse delle ampiezze
     codebook = -V+DV/2:DV:V-DV/2; % Valori quantizzati
+    
+    % SNR teorica
     SNRt = M^2./(1+4*(M^2-1)*peA);
     
-    % Analisi registrazione vocale
+    % SNR registrazione vocale
     % Quantizzazione
     [index, quants] = quantiz(sigrec,partition,codebook);
     
-    figure(1)
-    
-    % Spettro di potenza
-    psd = abs(fft(quants)).^2;
-    
-    subplot(cases,2,2*(i-1)+1);
-    line = ['Spettro di potenza (voce registrata ', num2str(nbit(i)), ' bit)'];
-    title(line);
-    grid on
-    hold on
-    plot(fr, fftshift(psd));
-    xlabel('f')
-    
-    % Densità di probabilità
-    subplot(cases,2,2*(i-1)+2)
-    histogram(quants, M)
-    line = ['Densità di probabilità (voce registrata ', num2str(nbit(i)), ' bit)'];
-    title(line)
-    hold on
-    
     % Calcolo SNR
-    words = de2bi(index, nbit(i));    
-    for j = 1:length(peB)
-        outdata = bsc(words, peB(j));
-        outidx = bi2de(outdata);
-        outidx = outidx';
-        vout = codebook(outidx + 1);
-        e = sigrec - vout;
-        SNR(j) = snr(sigrec, e);
-    end
+    SNR = fullSNR(sigrec, index, codebook, peB); % SNR segnale
     
-    figure(2)
     subplot(3,2,2*(i-1)+1)
     line = ['SNR (voce registrata, ', num2str(nbit(i)), ' bit)'];
     semilogx(peA, 10*log10(SNRt));
@@ -81,39 +87,10 @@ for i = 1:length(nbit)
     % Analisi file audio
     % Quantizzazione
     [index, quants] = quantiz(sigfile,partition,codebook);
-        
-    figure(2);
-    
-    % Spettro di potenza
-    psd = abs(fft(quants)).^2;
-    
-    subplot(cases,2,2*(i-1)+1)
-    grid on
-    hold on
-    plot(ff, fftshift(psd));
-    xlabel('f')
-    line = ['Spettro di potenza (file audio ', num2str(nbit(i)), ' bit)'];
-    title(line);
-    
-    % Densità di probabilità
-    subplot(cases,2,2*(i-1)+2)
-    histogram(quants, M)
-    line = ['Densità di probabilità (file audio ', num2str(nbit(i)), ' bit)'];
-    title(line)
-    hold on
     
     % Calcolo SNR
-    words = de2bi(index, nbit(i));    
-    for j = 1:length(peB)
-        outdata = bsc(words, peB(j));
-        outidx = bi2de(outdata);
-        outidx = outidx';
-        vout = codebook(outidx + 1);
-        e = sig - vout;
-        SNR(j) = snr(sigfile, e);
-    end
+    SNR = fullSNR(sigfile, index, codebook, peB); % SNR segnale
     
-    figure(2)
     subplot(3,2,2*(i-1)+2)
     line = ['SNR (file audio, ', num2str(nbit(i)), ' bit)'];
     semilogx(peA, 10*log10(SNRt));
@@ -123,4 +100,19 @@ for i = 1:length(nbit)
     title(line);
     legend('SNR teorica', 'SNR segnale');
     xlabel('P_e')
+end
+
+function SNR=fullSNR(sig, index, codebook, pe) % funzione per il calcolo di SNR su tutte le probabilità
+
+SNR = zeros(1, length(pe));
+indata = de2bi(index); % Codifica
+
+for i = 1:length(pe)
+    outdata = bsc(indata, pe(i)); % Simulazione trasmissione
+    outidx = bi2de(outdata);
+    vout = codebook(outidx+1);
+    e = sig - vout; % Segnale d'errore/rumore
+    SNR(i) = snr(sig, e);
+end
+
 end
