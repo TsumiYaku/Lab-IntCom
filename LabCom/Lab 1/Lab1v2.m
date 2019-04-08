@@ -5,7 +5,7 @@ figure(1)
 % Analisi voce registrata
 % Registrazione audio
 fsr = 8000; % Frequenza di campionamento
-Tr = 3; % Tempo di registrazione
+Tr = 5; % Tempo di registrazione
 
 recorder = audiorecorder(fsr, 16, 1);
 recordblocking(recorder, Tr);
