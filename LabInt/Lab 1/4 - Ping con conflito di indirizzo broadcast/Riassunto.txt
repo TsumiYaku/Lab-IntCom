@@ -1,0 +1,28 @@
+Indirizzi IP:
+H1: 172.16.0.127 netmask 255.255.255.0
+H2: 172.16.0.1 nemask 255.255.255.128
+
+Comandi utilizzati:
+- ping 172.16.0.1 -c 4 (H1)
+- ping 172.16.0.127 -c 4 -b (H2)
+
+
+- La situzione è analoga al punto precedente, con l'unica differenza che l'indirizzo di H1
+corrisponde all'indirizzo di bcast della rete di H2.
+
+- Se H1 prova a inviare Echo request ad H2 si presenta la stessa identica situazione
+del punto precedente (H2 rifiuta le ARP requests perchè l'IP di H1 non può essere l'IP
+di un host della sua rete).
+
+- Se H2 prova a pingare H1 il terminale avvisa che si sta provando a fare un ping a bcast
+e obbliga l'inserimento dell'opzione -b nel comando
+
+- Una volta avviato il comando H1 riceverà la Echo request (essendo indirizzata al suo IP e 
+al MAC bcast) ma ogni volta che proverà a inviare una Echo reply invierà prima una ARP request,
+avendo però lo stesso risultato del punto precedente (ARP request ignorata da H2 e entry incompleta
+nella tabella di H1). Nessuna Echo reply verrà quindi inviata da H1
+
+- Analogamente alla situazione del ping bcast, H2 risponderà alle sue stesse Echo request (essendo
+per lui un normale ping a bcast). Le reply non risulteranno in cattura (essende inviate tramite
+l'interfaccia di loopback). Nel terminale compaiono solo le risposte da H2 (essendo le uniche 
+effettivamente ricevute dall'host).

@@ -1,0 +1,23 @@
+Indirizzi IP:
+H1: 192.168.1.20/27
+H2: 192.168.1.2/28
+
+Comandi utilizzati:
+- ping 192.168.1.2 -c 4 (H1)
+- ping 192.168.1.20 -c 4 (H2)
+
+
+- La rete di H1 contiene tutti gli indirizzi che terminano con 1-30 (oltre agli indirizzi 
+di bcast e rete), includendo quindi H2. La rete di H2 contiene tutti gli indirizzi che terminano
+con 1-14, non includendo quindi H1.
+
+- H1 inizialmente invia una ARP request ad H2. Tuttavia, vedendo che l'ARP request proviene da 
+un indirizzo IP fuori dalla sua rete, H2 scarta la request. H1 invia multiple ARP request
+(una all'inizio e una per ogni Echo request che vuole mandare) ma non riceverà mai reply 
+(e di conseguenza non invierà Echo request, facendo fallire il comando ping).
+
+- La tabella di ARP di H1 contiene una entry incompleta (cioè senza indirizzo MAC) all'IP di H2,
+mentre la tabella di H2 rimane vuota.
+
+- Se H2 prova a pingare H1 il terminale ritorna un messaggio di errore, essendo H1 fuori dalla rete
+di H2, e nessun pacchetto viene inviato alla rete.

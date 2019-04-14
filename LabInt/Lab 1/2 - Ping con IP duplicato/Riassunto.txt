@@ -1,0 +1,35 @@
+Indirizzi IP:
+H1: 192.168.1.1
+H3=H1': 192.168.1.1
+H2: 192.168.1.2
+
+
+Parte 1 (H2 pinga H1):
+
+Comandi utilizzati:
+- ping 192.168.1.1 -c 4 (H2)
+
+- H2 invia una ARP request ad H1, ricevendo due risposte (avendo H1 e H1' entrambi lo stesso IP).
+Solo la prima risposta viene accettata da H2, che invierà pacchetti Echo request al MAC di H1.
+La tabella di ARP di H2 contiene solo la entry di H1, mentre H1 e H1' avranno entrambe la entry di H2
+
+- H1' non riceverà Echo requests e risulteranno nella cattura solo la ARP request e la sua reply
+
+- La comunicazione tra H1 e H2 avviene come un normale ping
+
+
+Parte 2 (H1 e H1' pingano contemporaneamente H2)
+
+Comandi utilizzati:
+- ping 192.168.1.2 -c 4 (H1 e H1')
+
+- H1 e H1' inviano ARP request a H2. H2 risponde a entrambe, ma sovrascriverà la sua entry di H1
+con l'ultima request che gli arriva. H1 e H1' avranno entrambi la entry di H2
+
+- Dopo aver ricevuto la prima ARP request e Echo request (in questo caso da H1), H2 inizierà a
+inviare reply ad H1, ma non appena riceve l'ARP request da H1', tutte le Echo reply (per le request
+che arrivano sia da H1 che da H1') avranno come MAC destinazione quello di H1'. H1' quindi riceve 
+risposte duplicate alle sue Echo requests (ricevendo anche le risposte alle request di H1)
+
+- H1 vedrà le sue Echo request (successive alla ARP reply di H1' ad H2) ignorate e dichiarerà 
+l'host irraggiungibile
