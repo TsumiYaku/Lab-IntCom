@@ -10,14 +10,14 @@ Comandi utilizzati:
 dell'opzione -b nel comando
 
 - Quando viene inviata la prima Echo request da H1, H2 e H3 inviano ad H1 un ARP request 
-e H1 invia a entrambi una ARP reply. H1 avr‡ come ARP entries quelle di H2 e H3,
+e H1 invia a entrambi una ARP reply. H1 avr√† come ARP entries quelle di H2 e H3,
 mentre gli altri due solo quella di H1
 
-- Dopo di che, ad ogni Echo request i 3 host (compreso H1) inviano ad H1 una Echo reply,
+- Dopo di che, ad ogni Echo request i 3 host (compreso H1 stesso) inviano ad H1 una Echo reply,
 essendo tutti i pacchetti indirizzati a indirizzi di bcast (sia IP che MAC) e quindi
-accettati da tutti gli host (nella cattura non vediamo le reply di H1 perchË l'host
+accettati da tutti gli host (nella cattura non vediamo le reply di H1 perch√® l'host
 utilizza l'interfaccia di loopback per inviare una reply a se stesso).
 
 - Nel terminale risultano le risposte da tutti e tre gli hosts (marchiando quelle aggiuntive
-come duplicate). Non risultano risposte duplicate al quarto ping perchË l'applicazione
-viene chiusa alla prima reply ricevuta (essendo il comando settato per solo ping)
+come duplicate). Non risultano risposte duplicate al quarto ping perch√® l'applicazione
+viene chiusa alla prima reply ricevuta (essendo il comando settato per solo 4 ping)
