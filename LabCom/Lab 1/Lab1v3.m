@@ -1,4 +1,5 @@
-% Registrazione audio
+%% Registrazione audio
+
 fs = 8000; % Frequenza di campionamento
 Tr = 5; % Tempo di registrazione
 
@@ -7,23 +8,24 @@ recordblocking(recorder, Tr);
 sigrec = getaudiodata(recorder); % Segnale registrato
 sigrec = sigrec'; % Trasposto per compatibilità
 
-% Apertura file audio
+%% Apertura file audio
+
 [sigfile, fsf] = audioread('record.wav');
 sigfile = sigfile'; % Trasposto per compatibilità
 
-% Calcolo delle SNR
+%% Calcolo delle SNR
 nbit = [4 6 8]; % Bit di quantizzazione
 V = 1; % Ampiezza massima dei segnali
 mu = 255; % Coefficiente per compand
-peA = logspace(-9, -1, 1e3); % Valori di probabilità (SNR teorica)
-peB = logspace(-9, -1, 9); % Valori di probabilità (SNR segnali)
+pe_theory = logspace(-9, -1, 1e3); % Valori di probabilità (SNR teorica)
+pe_sig = logspace(-9, -1, 9); % Valori di probabilità (SNR segnali)
 
 for i = 1:length(nbit)
     
     M = 2^nbit(i); % Numero intervalli di quantizzazione
     
     % SNR teorica
-    SNRt = M^2./(1+4*(M^2-1)*peA);
+    SNRt = M^2./(1+4*(M^2-1)*pe_theory);
     
     % Intervalli di quantizzazione uniforme (per companding)
     DV = 2*V/M; % Passo di quantizzazione
@@ -38,13 +40,13 @@ for i = 1:length(nbit)
     [cindex, cquants] = quantiz(comprec, partition, codebook); % Quantizzazione con compand
     
     % Calcolo SNR
-    rSNR = fullSNR(sigrec, index, codebook, peB);
-    lrSNR = fullSNR(sigrec, lindex, lcodebook, peB); % SNR con quantizzazione di Lloyd
-    crSNR = zeros(1, length(peB)); % SNR con compand
+    rSNR = fullSNR(sigrec, index, codebook, pe_sig);
+    lrSNR = fullSNR(sigrec, lindex, lcodebook, pe_sig); % SNR con quantizzazione di Lloyd
+    crSNR = zeros(1, length(pe_sig)); % SNR con compand
     indata = de2bi(cindex);
     
-    for j = 1:length(peB)
-        outdata = bsc(indata, peB(j));
+    for j = 1:length(pe_sig)
+        outdata = bsc(indata, pe_sig(j));
         outidx = bi2de(outdata);
         vout = codebook(outidx+1);
         vout = compand(vout, mu, V, 'mu/expander');
@@ -60,13 +62,13 @@ for i = 1:length(nbit)
     [cindex, cquants] = quantiz(compfile, partition, codebook); % Quantizzazione con compand
     
     % Calcolo SNR
-    fSNR = fullSNR(sigfile, index, codebook, peB);
-    lfSNR = fullSNR(sigfile, lindex, lcodebook, peB); % SNR con quantizzazione di Lloyd
-    cfSNR = zeros(1, length(peB)); % SNR con compand
+    fSNR = fullSNR(sigfile, index, codebook, pe_sig);
+    lfSNR = fullSNR(sigfile, lindex, lcodebook, pe_sig); % SNR con quantizzazione di Lloyd
+    cfSNR = zeros(1, length(pe_sig)); % SNR con compand
     indata = de2bi(cindex);
     
-    for j = 1:length(peB)
-        outdata = bsc(indata, peB(j));
+    for j = 1:length(pe_sig)
+        outdata = bsc(indata, pe_sig(j));
         outidx = bi2de(outdata);
         vout = codebook(outidx+1);
         vout = compand(vout,mu,V, 'mu/expander');
@@ -77,12 +79,12 @@ for i = 1:length(nbit)
     % Plot dei risultati
     figure(1)
     subplot(3,1,i)
-    semilogx(peA,10*log10(SNRt));
+    semilogx(pe_theory,10*log10(SNRt));
     hold on
     grid on
-    semilogx(peB, rSNR, 'o')
-    semilogx(peB, lrSNR, 'o')
-    semilogx(peB, crSNR, 'o')
+    semilogx(pe_sig, rSNR, 'o')
+    semilogx(pe_sig, lrSNR, 'o')
+    semilogx(pe_sig, crSNR, 'o')
     line = ['SNR (voce registrata, ', num2str(nbit(i)), ' bit)'];
     title(line);
     legend('SNR teorica', 'SNR Uniforme', 'SNR Lloyd', 'SNR Companding');
@@ -90,17 +92,19 @@ for i = 1:length(nbit)
     
     figure(2)
     subplot(3,1,i)
-    semilogx(peA,10*log10(SNRt));
+    semilogx(pe_theory,10*log10(SNRt));
     hold on
     grid on
-    semilogx(peB, fSNR, 'o')
-    semilogx(peB, lfSNR, 'o')
-    semilogx(peB, cfSNR, 'o')
+    semilogx(pe_sig, fSNR, 'o')
+    semilogx(pe_sig, lfSNR, 'o')
+    semilogx(pe_sig, cfSNR, 'o')
     line = ['SNR (file audio, ', num2str(nbit(i)), ' bit)'];
     title(line);
     legend('SNR teorica', 'SNR Uniforme', 'SNR Lloyd', 'SNR Companding');
     xlabel('P_e');
 end
+
+%% Funzioni di utilità
 
 function SNR=fullSNR(sig, index, codebook, pe) % funzione per il calcolo di SNR su tutte le probabilità
 

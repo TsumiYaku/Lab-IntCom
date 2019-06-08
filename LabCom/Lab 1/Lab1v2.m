@@ -2,7 +2,8 @@ V = 1; % Ampiezza massima dei segnali
 
 figure(1)
 
-% Analisi voce registrata
+%% Analisi voce registrata
+
 % Registrazione audio
 fsr = 8000; % Frequenza di campionamento
 Tr = 5; % Tempo di registrazione
@@ -28,7 +29,8 @@ subplot(2,2,2)
 histogram(sigrec, 30);
 title('Densità di probabilità (voce registrata)');
 
-% Analisi file audio
+%% Analisi file audio
+
 % Apertura file
 [sigfile, fs] = audioread('record.wav');
 sigfile = sigfile'; % Trasposto per compatibilità
@@ -49,10 +51,11 @@ subplot(2,2,4)
 histogram(sigfile, 30)
 title('Densità di probabilità (file audio)')
 
-% Calcolo delle SNR
+%% Calcolo delle SNR
+
 nbit = [4 6 8]; % Bit di quantizzazione
-peA = logspace(-9,-1,1e3); % Valori di probabilità (SNR teorica)
-peB = logspace(-9,-1,9); % Valori di probabilità (SNR segnale)
+pe_theory = logspace(-9,-1,1e3); % Valori di probabilità (SNR teorica)
+pe_sig = logspace(-9,-1,9); % Valori di probabilità (SNR segnale)
 
 figure(2)
 
@@ -65,21 +68,21 @@ for i = 1:length(nbit)
     codebook = -V+DV/2:DV:V-DV/2; % Valori quantizzati
     
     % SNR teorica
-    SNRt = M^2./(1+4*(M^2-1)*peA);
+    SNRt = M^2./(1+4*(M^2-1)*pe_theory);
     
     % SNR registrazione vocale
     % Quantizzazione
     [index, quants] = quantiz(sigrec,partition,codebook);
     
     % Calcolo SNR
-    SNR = fullSNR(sigrec, index, codebook, peB); % SNR segnale
+    SNR = fullSNR(sigrec, index, codebook, pe_sig); % SNR segnale
     
     subplot(3,2,2*(i-1)+1)
     line = ['SNR (voce registrata, ', num2str(nbit(i)), ' bit)'];
-    semilogx(peA, 10*log10(SNRt));
+    semilogx(pe_theory, 10*log10(SNRt));
     hold on
     grid on
-    semilogx(peB, SNR, 'o');
+    semilogx(pe_sig, SNR, 'o');
     title(line);
     legend('SNR teorica', 'SNR segnale');
     xlabel('P_e')
@@ -89,18 +92,20 @@ for i = 1:length(nbit)
     [index, quants] = quantiz(sigfile,partition,codebook);
     
     % Calcolo SNR
-    SNR = fullSNR(sigfile, index, codebook, peB); % SNR segnale
+    SNR = fullSNR(sigfile, index, codebook, pe_sig); % SNR segnale
     
     subplot(3,2,2*(i-1)+2)
     line = ['SNR (file audio, ', num2str(nbit(i)), ' bit)'];
-    semilogx(peA, 10*log10(SNRt));
+    semilogx(pe_theory, 10*log10(SNRt));
     hold on
     grid on
-    semilogx(peB, SNR, 'o');
+    semilogx(pe_sig, SNR, 'o');
     title(line);
     legend('SNR teorica', 'SNR segnale');
     xlabel('P_e')
 end
+
+%% Funzioni di utilità
 
 function SNR=fullSNR(sig, index, codebook, pe) % funzione per il calcolo di SNR su tutte le probabilità
 
