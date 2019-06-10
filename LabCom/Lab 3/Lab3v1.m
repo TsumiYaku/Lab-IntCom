@@ -5,13 +5,13 @@ close all
 MPAM = 2; 
 nbits = 1e4; % Numero di bit trasmessi
 Mbps = 100; % Velocità di trasmissione in Mbps
-SpS = 10; % Campioni per simbolo
+fs = 8000; % Banda di simulazione (freq di campionamento)
 
 BpS = log2(MPAM); % Numero di bits per simbolo
 Rs = Mbps/BpS; % Velocità di trasmissione simboli in Baud
+SpS = fs/Rs; % Campioni per simbolo
 Ts = 1/Rs; % Tempo di trasmissione di un simbolo
-fs = SpS*Rs; % Banda di simulazione (freq di campionamento)
-sym2alpha = [-1;1]; % Tabella di conversione da simboli a coefficienti PAM
+sym2alpha = [0;1]; % Tabella di conversione da simboli a coefficienti PAM
 alpha2sym = [0;1]; % Tabella di conversione da coefficienti PAM a simboli
 CarrierFreq = 2e3; % Frequenza carrier sinusoidale
 
@@ -26,14 +26,8 @@ for i=1:length(matr)
 end
 
 %% Generazione segnale elettrico
-alphas = 2*Bits-1; % Conversione da bits ad ampiezze del sengnale elettrico
-sig = zeros(nbits*SpS,1);
 
-for ii=1:nbits
-    for jj=1:SpS
-        sig((ii-1)*SpS+jj) = alphas(ii);
-    end
-end
+sig = toSig(Bits, sym2alpha, alpha2sym, SpS, BpS);
 sig = sig';
 
 %% Calcolo e riproduzione del segnale in uscita con carrier 
@@ -41,13 +35,103 @@ sig = sig';
 samples = length(sig); % Campioni del segnale
 t = linspace(0, length(Bits)/Mbps, length(sig));
 
-sig_out = real(sig.*cos(2*pi*CarrierFreq*t));
-%sound(sig_out, CarrierFreq+fs);
+sig_out = sig.*cos(2*pi*CarrierFreq*t);
+%sound(sig_out, fs);
+
 %% Plot delle PSD (test)
 
-f1 = linspace(-Bsim, Bsim,length(sig));
-f2 = linspace(-Bsim-CarrierFreq, Bsim+CarrierFreq,length(sig_out));
+f = linspace(-fs/2, fs/2, length(sig));
 
-figure(1), plot(f1,abs(fftshift(fft(sig))).^2);
-figure(2), plot(f2,abs(fftshift(fft(sig_out))).^2);
+subplot(2,2,1), plot(f, abs(fftshift(fft(sig))).^2);
+subplot(2,2,2), plot(f, abs(fftshift(fft(sig_out))).^2);
 
+sig_out_rx = [sig_out];
+t = linspace(0, length(Bits)/Mbps*2, length(sig_out_rx));
+sig_out_rx = sig_out_rx.*cos(2*pi*CarrierFreq*t);
+f1 = linspace(-fs/2, fs/2, length(sig_out_rx));
+subplot(2,2,3), plot(f1, abs(fftshift(fft(sig_out_rx))).^2);
+
+H_matched = sinc(f1*Ts);
+sig_out_rx = sigFilter(sig_out_rx, H_matched);
+subplot(2,2,4), plot(f1, abs(fftshift(fft(sig_out_rx))).^2);
+
+H_matched = sinc(f*Ts);
+signal_ref = sigFilter(sig, H_matched);
+sig_out_rx = sigAlign(signal_ref, sig_out_rx);
+
+bits_out = toBits(sig_out_rx, sym2alpha, alpha2sym, SpS);
+
+BER = 10*log10(ber(Bits, bits_out));
+
+eyediagram(sig_out_rx,SpS*2,SpS*2);
+
+%% Funzioni di utilità
+
+function sig = toSig(bits, sym2alpha, alpha2sym, SpS, BpS)
+    sig = zeros(length(bits)*SpS/BpS,1);
+    sym = zeros(1, BpS);
+    
+    for i=1:BpS:length(bits)
+        % Salva il simbolo singolo per convertirlo
+        for j = 1:BpS
+            sym(j) = bits(i+j-1);
+        end
+        
+        % Converte il simbolo in coefficiente del segnale
+        for j=1:length(sym2alpha)
+            if(isequal(sym, alpha2sym(j,:)))
+                for k=1:SpS
+                    sig(((i-1)*SpS/BpS)+k) = sym2alpha(j);
+                end
+                break;
+            end
+        end
+    end
+end
+
+% Converte un segnale elettrico in bits
+function bits = toBits(sig, sym2alpha, alpha2sym, SpS)
+bits = [];
+
+% Creazione delle soglie 
+th = [];
+for i=1:length(sym2alpha)-1
+    th = [th, (sym2alpha(i+1)+sym2alpha(i))/2]; 
+end
+
+% Comprime il segnale a 1 SpS
+alphas = []; % Coefficienti
+for i=0:length(sig)/SpS-1
+    alphas = [alphas sig(i*SpS+ceil(SpS/2))];
+end
+
+% Converte i coefficienti in simboli
+for i=1:length(alphas)
+    for j=1:length(th)
+        sym = alpha2sym(j+1, :);
+        if(abs(alphas(i)) <= th(j)) 
+            sym = alpha2sym(j, :);
+            break;
+        end
+    end
+    bits = [bits, sym];
+end
+end
+
+% Calcola la BER tra segnale entrante e segnale uscente
+function BER = ber(bits_in, bits_out)
+t = abs(bits_in-bits_out); % Calcola i bits di differenza tra i due segnali
+BER = sum(t)/length(t);
+end
+
+% Filtra il segnale con il filtro passato come parametro
+function sig_out = sigFilter(sig, filter) 
+Sig_in = fft(sig);
+Sig_out = Sig_in.*fftshift(filter);
+sig_out = real(ifft(Sig_out));
+end
+
+function signal_out = sigAlign(signal_ref,signal_rx) 
+[signal_ref_aligned,signal_rx_aligned,Delay] = alignsignals(signal_ref,signal_rx);
+signal_out=signal_rx(Delay+1:Delay+length(signal_ref));
+end

@@ -1,0 +1,42 @@
+Comandi utilizzati:
+- su H1: nttcp -T -n 10000 -l 1468 192.168.1.3 > F1.txt
+- su H2: nttcp -T -n 10000 -l 1468 -r 192.168.1.1 > F3.txt & nttcp -T -n 10000 -l 1468 -r 192.168.1.3 > F2.txt
+
+Aspettative
+- Goodput
+	- Trasmettitore:
+		- F1:
+		- F2:
+		- F3:
+	- Ricevitore:
+		- F1:
+		- F2:
+		- F3:
+- Collisioni
+	- F1:
+	- F2:
+	- F3:
+- Congestioni
+	- F1:
+	- F2:
+	- F3: 
+
+Risultati
+- Goodput
+	- Trasmettitore:
+		- F1:
+		- F2:
+		- F3:
+	- Ricevitore:
+		- F1:
+		- F2:
+		- F3:
+- Collisioni
+	- F1: no
+	- F2: no
+	- F3: no
+- Congestioni
+	- F1:
+	- F2:
+	- F3: 
+
