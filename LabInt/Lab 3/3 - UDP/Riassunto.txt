@@ -1,0 +1,15 @@
+IP attaccante: 192.168.1.2
+IP vittima: 192.168.1.1
+
+Comando utilizzato: sudo nmap 192.168.1.1 -p 1-100 -sU
+
+Il comando è eseguibile solo tramite privilegi d'amministratore (in caso contrario l'applicazione ritorna un messaggio d'errore)
+
+Come per TCP l'host viene individuato tramite ARP.
+
+Per individuare le porte UDP aperte l'applicazione crea e invia pacchetti UDP alla vittima. Se viene inviata una risposta ICMP port unreachable (Vedi Cattura.png) allora la porta viene considerata chiusa, mentre in caso di mancata risposta riprova ad attendere e inviare altri pacchetti (fino a un TOT massimo). Se non vengono inviate ICMP dalla vittima o se viene mandata una risposta UDP (non garantito) la porta allora è (presumibilmente) aperta.
+
+Dato che, come descritto sopra, per poter individuare se una porta aperta servono multipli tentativi e attese da parte dell'attacante lo scan risulta notevolmente più lungo rispetto rispetto alla controparte TCP.
+
+
+Cattura.png : viene mostrato come nmap invia ARP request per individuare l'host e come vengono inviati pacchetti ICMP dalla vittima quando una porta è chiusa dopo che l'attaccante ha inviato dei pacchetti.

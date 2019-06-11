@@ -1,0 +1,15 @@
+IP attaccante: 192.168.1.2
+IP vittima: 192.168.1.1
+
+Comando utilizzato: nmap 192.168.1.1 -p 1-100
+
+Per individuare la presenza dell'host nella rete l'attaccante invia dei messaggi TCP alle porte 80 e 443 (essendo raramente bloccate da un firewall dato che vengono utilizzate per l'hosting di web servers). Ricevendo dei messaggi TCP RST l'attaccante può confermare la presenza dell'host e procedere allo scan (vedi Cattura.png)
+
+Lo scan avviene in ordine (presumibilmente) casuale (vedi Plot.png).
+
+Per poter vedere quali porte sono aperte l'applicazione nmap invia dei dati fantocci tramite tcp e, in base alla risposta, stabilisce se la porta è aperta (la vittima invia un SYN ACK e nmap chiude la connessione) o chiusa (la vittima invia dei RST).
+
+Inoltre, dato che nmap richiede il servizio TCP per inviare ogni pacchetto la porta d'origine è scelta a caso (da TCP) tra quelle disponibili
+
+
+Cattura.png : viene mostrato come nmap (tramite il servizio TCP) invii delle richieste alle porte 80 e 443 per poi iniziare a inviare richieste alle altre porte una volta ricevuta una risposta

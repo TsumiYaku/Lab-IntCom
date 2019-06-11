@@ -1,0 +1,16 @@
+IP attaccante: 192.168.1.2
+IP vittima: 192.168.1.1
+
+Comando utilizzato: sudo nmap 192.168.1.1 -p 1-100
+
+Avendo privilegi d'amministratore l'applicazione crea manualmente pacchetti ARP per poter verificare la presenza della vittima nella rete (confermandone la presenza in caso di ARP reply). (vedi Cattura.png)
+
+La presenza delle porte viene verificata in modo identico al caso senza privilegi d'amministratore, con l'unica differenza che i pacchetti tcp vengono direttamente creati da nmap (invece che richiedere il servizio al livello inferiore), contenendo solo le informazioni necessarie a nmap per poter individurare le porte aperte. Questo spiega anche il motivo per cui la porta d'origine non cambia mai: è stata decisa da nmap e l'applicazione non ha ritenuto necessario cambiarla.
+
+Le risposte del client in caso di porte aperte o chiuse sono analoghe, con l'unica differenza che il livello TCP dell'attaccante invia un ulteriore RST una volta ricevuta una risposta positiva da una vittima (un pacchetto SYN ACK) non avendo mai richiesto la connessione (il pacchetto TCP inviato dall'attaccante era stato creato da nmap e non da TCP).
+
+
+Cattura.png : viene mostrato come nmap invia ARP requests per individuare l'host, come la porta d'origine dei pacchetti TCP inviati dall'attacante non cambia mai e come il livello TCP dell'attaccante risponda con un RST quando riceve una risposta positiva dalla vittima (pacchetti 16 e 17).
+
+
+NOTE PER LA RELAZIONE: ho messo una versione zoomata del plot essendo il primo plot diviso in due sezioni (dato che nmap ha avuto la geniale idea di aspettare un secondo per dio solo sa quale motivo). ho zoomato sulla seconda sezione per far vedere che lo scan avviene in maniera casuale.

@@ -1,0 +1,10 @@
+I plot corrispondono ai dettagli dei pacchetti inviati dal server Chargen al client Telnet:
+
+- Seq:
+Il numero di sequenza dei pacchetti incrementa linearmente dato che il server invia costantemente dati al client tramite tcp (avendo quindi un numero di sequenza incrementale a ogni pacchetto). Gli ultimi pacchetti non presentano un aumento del numero di sequenza (vedi Ack).
+- Ack: 
+Il valore dell'ACk dei vari pacchetti rimane costante dato che il server non stà rispondendo a una comunicazione del client (sta solo inviando dati), non avendo quindi il bisogno di inviargli degli ACK (e quindi il valore non aumenta). Gli unici ACK inviati sono alla fine durante la chiusura della connessione TCP (durante questi ACK il numero di sequenza non aumenta).
+- Win:
+Come primo valore (di default) la congestion window è impostata a 28k, ma una volta stabilita la connessione la finestra viene ridotta a 227, dato che il server non si aspetta risposte se non ACK, non avendo quindi bisogno di una finestra ampia.
+- Len:
+I primi pacchetti hanno lunghezza corta essendo quelli dedicati all'apertura della connessione, mentre tutti gli altri presentano una lunghezza di 1448 (la massima possibile nel protocollo TCP per non superare il limite di 1500 B del protocollo IP)
