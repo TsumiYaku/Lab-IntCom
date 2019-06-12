@@ -1,44 +1,29 @@
 Comandi utilizzati:
-- su H1: nttcp -T -n 10000 -l 1468 -u 192.168.1.3 > F1.txt
-- su H2: nttcp -T -n 10000 -l 1468 -r -u 192.168.1.1 > F3.txt & nttcp -T -n 10000 -l 1468 -r -u 192.168.1.3 > F2.txt
+- su H1: nttcp -T -n 10000 -l 1472 -u 192.168.1.3 > F1.txt
+- su H2: nttcp -T -n 10000 -l 1472 -r -u 192.168.1.1 > F3.txt & nttcp -T -n 10000 -l 1472 -r -u 192.168.1.3 > F2.txt
 
 Aspettative
-- Goodput
-	- Trasmettitore:
-		- F1:
-		- F2:
-		- F3:
-	- Ricevitore:
-		- F1:
-		- F2:
-		- F3:
-- Collisioni
-	- F1:
-	- F2:
-	- F3:
-- Congestioni
-	- F1:
-	- F2:
-	- F3: 
-
-Risultati
-- Goodput
-	- Trasmettitore:
-		- F1:
-		- F2:
-		- F3:
-	- Ricevitore:
-		- F1:
-		- F2:
-		- F3:
-- Collisioni
+- Goodput (in Mbps): Vedi "Calcoli teorici.docx" 
+- Collisioni: No, tutti i canali sono full-duplex
+- Congestioni:
 	- F1: no
-	- F2: no
-	- F3: no
-- Congestioni
-	- F1:
-	- F2:
-	- F3: 
+	- F2: si, dato che H3 ha una velocità maggiore di quanto H2 possa ricevere e UDP non fa
+	controlli di congestione
+	- F3: si, dato che H2 riceve dati sia da H1 che H3 ed essendo quindi la velocità di ricezione
+	minore della somma delle velocità di trasmissione (e, di nuovo, UDP non fa controlli di congestione)
 
-
-
+Risultati:
+- Goodput (in Mbps)
+	- Trasmettitore:
+		- F1: 5.0407
+		- F2: 96.1204 (dovuta al fatto che l'host invia tutti i dati indiscriminatamente usando tutta la banda disponibile)
+		- F3: 5.0241
+	- Ricevitore:
+		- F1: 5.0063
+		- F2: 3.6852
+		- F3: 5.0184
+- Collisioni: no
+- Congestioni:
+	- F1: no
+	- F2: si, gran parte dei dati vengono infatti scartati dallo switch
+	- F3: si, parte dei dati viene persa

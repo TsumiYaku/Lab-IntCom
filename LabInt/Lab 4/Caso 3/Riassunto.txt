@@ -1,42 +1,31 @@
 Comandi utilizzati:
-- su H1: nttcp -T -n 10000 -l 1468 -u 192.168.1.3 > F1.txt
-- su H2: nttcp -T -n 10000 -l 1468 -r 192.168.1.1 > F3.txt & nttcp -T -n 10000 -l 1468 -r 192.168.1.3 > F2.txt
+- su H1: nttcp -T -n 10000 -l 1472 -u 192.168.1.3 > F1.txt
+- su H2: nttcp -T -n 10000 -l 1460 -r 192.168.1.1 > F3.txt & nttcp -T -n 10000 -l 1460 -r 192.168.1.3 > F2.txt
 
 Aspettative
-- Goodput
-	- Trasmettitore:
-		- F1:
-		- F2:
-		- F3:
-	- Ricevitore:
-		- F1:
-		- F2:
-		- F3:
-- Collisioni
-	- F1:
-	- F2:
-	- F3:
+- Goodput (in Mbps): Vedi "Calcoli teorici.docx" 
+- Collisioni: No, tutti i canali sono full-duplex
 - Congestioni
-	- F1:
-	- F2:
-	- F3: 
+	- F1: no
+	- F2: come caso 1
+	- F3: come caso 1
 
 Risultati
 - Goodput
 	- Trasmettitore:
-		- F1:
-		- F2:
-		- F3:
+		- F1: 8.9283 (F1, essendo UDP, deve aver preso tutta la banda disponibile (è stato anche il primo a finire)
+		- F2: 8.7504 (F2 deve aver avuto una finestra di allocazione iniziale maggiore di F3)
+		- F3: 4.7450
 	- Ricevitore:
-		- F1:
-		- F2:
-		- F3:
+		- F1: 8.8552
+		- F2: 8.2399
+		- F3: 4.7038
 - Collisioni
 	- F1: no
 	- F2: no
 	- F3: no
 - Congestioni
-	- F1:
-	- F2:
-	- F3: 
+	- F1: no
+	- F2: no
+	- F3: no
 

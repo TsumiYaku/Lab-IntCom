@@ -1,42 +1,29 @@
 Comandi utilizzati:
-- su H1: nttcp -T -n 10000 -l 1468 192.168.1.3 > F1.txt
-- su H2: nttcp -T -n 10000 -l 1468 -r 192.168.1.1 > F3.txt & nttcp -T -n 10000 -l 1468 -r 192.168.1.3 > F2.txt
+- su H1: nttcp -T -n 10000 -l 1460 192.168.1.3 > F1.txt
+- su H2: nttcp -T -n 10000 -l 1460 -r 192.168.1.1 > F3.txt & nttcp -T -n 10000 -l 1468 -r 192.168.1.3 > F2.txt
 
 Aspettative
-- Goodput
-	- Trasmettitore:
-		- F1:
-		- F2:
-		- F3:
-	- Ricevitore:
-		- F1:
-		- F2:
-		- F3:
-- Collisioni
-	- F1:
-	- F2:
-	- F3:
-- Congestioni
-	- F1:
-	- F2:
-	- F3: 
+- Goodput (in Mbps): Vedi "Calcoli teorici.docx" 
+- Collisioni: No, tutti i canali sono full-duplex
+- Congestioni:
+	- F1: no
+	- F2: dato che H3 ha una velocità maggiore di quanto H2 possa ricevere si potrebbe pensare di si,
+	ma il protocollo TCP dovrebbe prevenirlo.
+	- F3: come sopra potrebbe esserci congestione perchè H2 non riesce a gestire tutti i dati abbastanza
+	velocemente ma il protocollo TCP dovrebbe prevenirlo.
 
-Risultati
-- Goodput
+Risultati:
+- Goodput (in Mbps)
 	- Trasmettitore:
-		- F1:
-		- F2:
-		- F3:
+		- F1: 5.0459
+		- F2: 5.0804
+		- F3: 4.7152
 	- Ricevitore:
-		- F1:
-		- F2:
-		- F3:
-- Collisioni
+		- F1: 4.9943
+		- F2: 5.0446
+		- F3: 4.6936
+- Collisioni: no
+- Congestioni:
 	- F1: no
 	- F2: no
 	- F3: no
-- Congestioni
-	- F1:
-	- F2:
-	- F3: 
-
