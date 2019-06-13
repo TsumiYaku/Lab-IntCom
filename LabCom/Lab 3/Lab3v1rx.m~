@@ -2,62 +2,21 @@ clear all
 close all
 
 %% Parametri
-
 MPAM = 2; 
 nbits = 1e4; % Numero di bit trasmessi
 Mbps = 100; % Velocità di trasmissione in Mbps
-fc = 16000; % Banda di simulazione (freq di campionamento)
+fs = 16000; % Banda di simulazione (freq di campionamento)
 
 BpS = log2(MPAM); % Numero di bits per simbolo
 Rs = Mbps/BpS; % Velocità di trasmissione simboli in Baud
-SpS = fc/Rs; % Campioni per simbolo
+SpS = fs/Rs; % Campioni per simbolo
 Ts = 1/Rs; % Tempo di trasmissione di un simbolo
-Tc = 1/fc;
+Tc = 1/fs;
 sym2alpha = [0;1]; % Tabella di conversione da simboli a coefficienti PAM
 alpha2sym = [0;1]; % Tabella di conversione da coefficienti PAM a simboli
 CarrierFreq = 2e3; % Frequenza carrier sinusoidale
 
-%% Ricezione segnale
-
-Tr = 5;
-
-recorder = audiorecorder(fc, 16, 1);
-recordblocking(recorder, Tr);
-sig = getaudiodata(recorder);
-sig = sig';
-
-samples = length(sig);
-t = [0:1:samples-1]*Tc;
-
-plot(sig'.*cos(2*pi*CarrierFreq*t))
-
-%% Creazione riferimento
-
-%% Demodulazione segnale
-
 %% Funzioni di utilità
-
-function sig = toSig(bits, sym2alpha, alpha2sym, SpS, BpS)
-    sig = zeros(length(bits)*SpS/BpS,1);
-    sym = zeros(1, BpS);
-    
-    for i=1:BpS:length(bits)
-        % Salva il simbolo singolo per convertirlo
-        for j = 1:BpS
-            sym(j) = bits(i+j-1);
-        end
-        
-        % Converte il simbolo in coefficiente del segnale
-        for j=1:length(sym2alpha)
-            if(isequal(sym, alpha2sym(j,:)))
-                for k=1:SpS
-                    sig(((i-1)*SpS/BpS)+k) = sym2alpha(j);
-                end
-                break;
-            end
-        end
-    end
-end
 
 % Converte un segnale elettrico in bits
 function bits = toBits(sig, sym2alpha, alpha2sym, SpS)
@@ -94,6 +53,18 @@ t = abs(bits_in-bits_out); % Calcola i bits di differenza tra i due segnali
 BER = sum(t)/length(t);
 end
 
+% Applica un passa-basso di frequenza ff
+function sig = lowPass(sig_in, fs, ff) 
+    f = linspace(-fs/2, +fs/2, length(sig_in));
+    Sig = fftshift(fft(sig_in));
+    for i=1:length(Sig)
+        if(abs(f(i))>ff)
+            Sig(i) = 0;
+        end
+    end
+    sig = ifft(fftshift(Sig));
+end
+
 % Filtra il segnale con il filtro passato come parametro
 function sig_out = sigFilter(sig, filter) 
 Sig_in = fft(sig);
@@ -101,16 +72,3 @@ Sig_out = Sig_in.*fftshift(filter);
 sig_out = real(ifft(Sig_out));
 end
 
-function signal_out = sigAlign(signal_ref,signal_rx) 
-[signal_ref_aligned,signal_rx_aligned,Delay] = alignsignals(signal_ref,signal_rx);
-signal_out=signal_rx(Delay+1:Delay+length(signal_ref));
-end
-
-function sig_out = sigNorm(sig, ref)
-
-pow_sig = mean(abs(sig.^2));
-pow_ref = mean(abs(ref.^2));
-
-sig_out = sig.*sqrt(pow_ref)./sqrt(pow_sig);
-
-end

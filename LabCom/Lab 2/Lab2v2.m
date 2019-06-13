@@ -98,12 +98,12 @@ end
 %% Plot delle BER
 
 figure(1)
-loglog(EbN0_theory_db, BER_theory);
+semilogy(EbN0_theory_db, BER_theory);
 hold on
-loglog(EbN0_sim_db, BER_matched, 'o');
-loglog(EbN0_sim_db, BER_poles(1,:), 'o');
-loglog(EbN0_sim_db, BER_poles(2,:), 'o');
-loglog(EbN0_sim_db, BER_poles(3,:), 'o');
+semilogy(EbN0_sim_db, BER_matched, 'o');
+semilogy(EbN0_sim_db, BER_poles(1,:), 'o');
+semilogy(EbN0_sim_db, BER_poles(2,:), 'o');
+semilogy(EbN0_sim_db, BER_poles(3,:), 'o');
 legend('SNR teorica', 'SNR f. adattato', 'SNR f. 50MHz', 'SNR f. 100 Mhz', 'SNR f. 150 MHz')
 grid on
 

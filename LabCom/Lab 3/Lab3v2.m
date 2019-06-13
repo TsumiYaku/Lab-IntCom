@@ -50,7 +50,7 @@ end
 if(failed)
     load('Sigs.mat');
 else
-    save('Sigs.mat', Sigs);
+    %save('Sigs.mat', Sigs);
 end
 
 %% Calcolo delle medie delle PSD di tutti i segnali

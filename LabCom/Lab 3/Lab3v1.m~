@@ -2,7 +2,6 @@ clear all
 close all
 
 %% Parametri
-
 MPAM = 2; 
 nbits = 1e4; % Numero di bit trasmessi
 Mbps = 100; % Velocità di trasmissione in Mbps
@@ -38,7 +37,7 @@ samples = length(sig); % Campioni del segnale
 t = [0:1:samples-1]*Tc;
 
 sig_out = sig.*cos(2*pi*CarrierFreq*t);
-audiowrite('audio.wav', sig_out, fc);
+%sound(sig_out, fs);
 
 %% Plot delle PSD (test)
 
@@ -64,14 +63,13 @@ subplot(2,2,4), plot(f1, abs(fftshift(fft(sig_out_rx))).^2);
 H_matched = sinc(f*Ts);
 signal_ref = sigFilter(sig, H_matched);
 sig_out_rx = sigAlign(signal_ref, sig_out_rx);
-sig_out_rx = sigNorm(sig_out_rx, signal_ref);
 
 bits_out = toBits(sig_out_rx, sym2alpha, alpha2sym, SpS);
 
 BER = ber(Bits, bits_out);
 
 eyediagram(sig_out_rx,SpS*2,SpS*2);
-eyediagram(signal_ref,SpS*2,SpS*2);
+eyediagram(sig_out_rx,SpS*2,SpS*2);
 
 %% Funzioni di utilità
 
@@ -149,6 +147,6 @@ function sig_out = sigNorm(sig, ref)
 pow_sig = mean(abs(sig.^2));
 pow_ref = mean(abs(ref.^2));
 
-sig_out = sig.*sqrt(pow_ref)./sqrt(pow_sig);
+sig_out = sig.*sqrt(pow_ref)./sqrt(pow
 
 end

@@ -1,12 +1,14 @@
 clear all;
 close all;
 
+% TODO aumentare n° bits e mettere sps dispari
+
 %% Parametri
 
 MPAM = 2; 
-nbits = 1e4; % Numero di bit trasmessi
+nbits = 1e5; % Numero di bit trasmessi
 Mbps = 100; % Velocità di trasmissione in Mbps
-SpS = 10; % Campioni per simbolo
+SpS = 9; % Campioni per simbolo
 
 a = 2; b = 10; % dB iniziali e finali Eb/N0
 EbN0_sim_db = a:1:b; % Eb/N0 per simulazione (in dB)
@@ -51,7 +53,7 @@ H_pole = [
 %% Calcolo delle BER per diversi Eb/N0
 
 % Curva BER teorica
-BER_theory = 10*log10(erfc(sqrt(EbN0_theory))/2); 
+BER_theory = erfc(sqrt(EbN0_theory))/2; 
 
 % Potenza del segnale
 psig = mean(abs(sig_in).^2); 
@@ -60,6 +62,8 @@ BER_matched = zeros(1,length(EbN0_sim));
 BER_poles = zeros(length(poles), length(EbN0_sim));
 
 for i=1:length(EbN0_sim)
+    
+    i
     
     % Calcolo AWGN
     sigma = (psig*SpS*BpS)/(2*EbN0_sim(i));
@@ -86,22 +90,22 @@ for i=1:length(EbN0_sim)
     ];
     
     % Calcolo BER segnali
-    BER_matched(i) = 10*log10(ber(Bits, bits_matched));
-    BER_poles(1,i) = 10*log10(ber(Bits, bits_pole(1,:)));
-    BER_poles(2,i) = 10*log10(ber(Bits, bits_pole(2,:)));
-    BER_poles(3,i) = 10*log10(ber(Bits, bits_pole(3,:)));
+    BER_matched(i) = ber(Bits, bits_matched);
+    BER_poles(1,i) = ber(Bits, bits_pole(1,:));
+    BER_poles(2,i) = ber(Bits, bits_pole(2,:));
+    BER_poles(3,i) = ber(Bits, bits_pole(3,:));
     
 end
 
 %% Plot delle BER
 
 figure(1)
-semilogx(EbN0_theory_db, BER_theory);
+semilogy(EbN0_theory_db, BER_theory);
 hold on
-semilogx(EbN0_sim_db, BER_matched, 'o');
-semilogx(EbN0_sim_db, BER_poles(1,:), 'o');
-semilogx(EbN0_sim_db, BER_poles(2,:), 'o');
-semilogx(EbN0_sim_db, BER_poles(3,:), 'o');
+semilogy(EbN0_sim_db, BER_matched, 'o');
+semilogy(EbN0_sim_db, BER_poles(1,:), 'o');
+semilogy(EbN0_sim_db, BER_poles(2,:), 'o');
+semilogy(EbN0_sim_db, BER_poles(3,:), 'o');
 legend('SNR teorica', 'SNR f. adattato', 'SNR f. 50MHz', 'SNR f. 100 Mhz', 'SNR f. 150 MHz')
 grid on
 
@@ -116,10 +120,10 @@ sig_out_pole = [
     sigFilter(sig_in, H_pole(3,:));
     ];
 
-eyediagram(sig_out_matched,SpS*2,SpS*2);
-eyediagram(sig_out_pole(1,:),SpS*2,SpS*2);
-eyediagram(sig_out_pole(2,:),SpS*2,SpS*2);
-eyediagram(sig_out_pole(3,:),SpS*2,SpS*2);
+%eyediagram(sig_out_matched,SpS*2,SpS*2);
+%eyediagram(sig_out_pole(1,:),SpS*2,SpS*2);
+%eyediagram(sig_out_pole(2,:),SpS*2,SpS*2);
+%eyediagram(sig_out_pole(3,:),SpS*2,SpS*2);
 
 
 %% Funzioni di utilità
