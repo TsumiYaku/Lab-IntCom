@@ -6,7 +6,7 @@ close all;
 %% Parametri
 
 MPAM = 2; 
-nbits = 1e5; % Numero di bit trasmessi
+nbits = 1e6; % Numero di bit trasmessi
 Mbps = 100; % Velocità di trasmissione in Mbps
 SpS = 9; % Campioni per simbolo
 
@@ -112,6 +112,22 @@ grid on
 
 %% Plot diagrammi ad occhio
 
+sig_in = sig_in(1:1e4);
+samples = length(sig_in);
+
+% Valore asse delle frequenze
+f = linspace(-fs/2, fs/2, samples); 
+
+% Filtro adattato
+H_matched = sinc(f*Ts);
+
+% Filtri RC
+H_pole = [
+    1./(1+(1i*f/poles(1)));
+    1./(1+(1i*f/poles(2)));
+    1./(1+(1i*f/poles(3)));
+    ];
+
 % Segnali filtrati senza rumore
 sig_out_matched = sigFilter(sig_in, H_matched);
 sig_out_pole = [
@@ -130,30 +146,27 @@ sig_out_pole = [
 
 % Converte un segnale elettrico in bits
 function bits = toBits(sig, sym2alpha, alpha2sym, SpS)
-bits = [];
-
 % Creazione delle soglie 
 th = [];
 for i=1:length(sym2alpha)-1
     th = [th, (sym2alpha(i+1)+sym2alpha(i))/2]; 
 end
 
-% Comprime il segnale a 1 SpS
-alphas = []; % Coefficienti
-for i=0:length(sig)/SpS-1
-    alphas = [alphas sig(i*SpS+ceil(SpS/2))];
-end
-
+BpS = length(alpha2sym(1,:));
+bits = NaN*ones(1,length(sig)/SpS*BpS);
 % Converte i coefficienti in simboli
-for i=1:length(alphas)
+for i=0:length(sig)/SpS-1
+    alphas = sig(i*SpS+ceil(SpS/2));
     for j=1:length(th)
         sym = alpha2sym(j+1, :);
-        if(alphas(i) <= th(j)) 
+        if(alphas <= th(j)) 
             sym = alpha2sym(j, :);
             break;
         end
     end
-    bits = [bits, sym];
+    for j = 1:length(sym)
+        bits((i*BpS)+j) = sym(j);
+    end
 end
 end
 

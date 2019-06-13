@@ -24,16 +24,49 @@ Tr = 5;
 recorder = audiorecorder(fc, 16, 1);
 recordblocking(recorder, Tr);
 sig = getaudiodata(recorder);
-sig = sig';
+
+
+
+%% Demodulazione e filtraggio segnale
 
 samples = length(sig);
 t = [0:1:samples-1]*Tc;
 
-plot(sig'.*cos(2*pi*CarrierFreq*t))
+sig = sig.*cos(2*pi*CarrierFreq*t);
+
+df = fc/samples;
+f = -fc/2:df:fc/2-df;
+
+H_matched = sinc(f*Ts);
+sig = sigFilter(sig, H_matched);
 
 %% Creazione riferimento
 
-%% Demodulazione segnale
+matr = [2,1,7,2,0,4,2,3,5,2,0,6,2,2,6,6,1,9];
+
+Bits = [];
+for i=1:length(matr)
+    Bits = [Bits, de2bi(matr(i),8)];
+end
+
+sig_ref = toSig(Bits, sym2alpha, alpha2sym, SpS, BpS);
+sig_ref = sig_ref';
+
+samples = length(sig_ref);
+df = fc/samples;
+f = -fc/2:df:fc/2-df;
+
+H_matched = sinc(f*Ts);
+sig_ref = sigFilter(sig_ref, H_matched);
+
+%% Allineamento segnale con riferimento
+
+sig = sigAlign(sig_ref, sig);
+sig = sigNorm(sig, sig_ref);
+
+Bits_out = toBits(sig, sym2alpha, alpha2sym, SpS);
+
+BER = ber(Bits, Bits_out);
 
 %% Funzioni di utilità
 
