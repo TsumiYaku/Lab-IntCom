@@ -8,7 +8,7 @@ close all;
 MPAM = 2; 
 nbits = 1e6; % Numero di bit trasmessi
 Mbps = 100; % Velocità di trasmissione in Mbps
-SpS = 9; % Campioni per simbolo
+SpS = 19; % Campioni per simbolo
 
 a = 2; b = 10; % dB iniziali e finali Eb/N0
 EbN0_sim_db = a:1:b; % Eb/N0 per simulazione (in dB)
@@ -95,8 +95,7 @@ for i=1:length(EbN0_sim)
     BER_poles(2,i) = ber(Bits, bits_pole(2,:));
     BER_poles(3,i) = ber(Bits, bits_pole(3,:));
     
-    clear bits_matched
-    clear bits_pole
+    clear bits_matched bits_pole sign noise
 end
 
 %% Plot delle BER
@@ -108,7 +107,10 @@ semilogy(EbN0_sim_db, BER_matched, 'o');
 semilogy(EbN0_sim_db, BER_poles(1,:), 'o');
 semilogy(EbN0_sim_db, BER_poles(2,:), 'o');
 semilogy(EbN0_sim_db, BER_poles(3,:), 'o');
+title('BER')
 legend('SNR teorica', 'SNR f. adattato', 'SNR f. 50MHz', 'SNR f. 100 Mhz', 'SNR f. 150 MHz')
+xlabel('E_b/N_0')
+ylabel('BER')
 grid on
 
 

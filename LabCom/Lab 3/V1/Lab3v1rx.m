@@ -21,11 +21,18 @@ CarrierFreq = 2e3; % Frequenza carrier sinusoidale
 
 Tr = 5;
 
+fprintf('Recording\n')
 recorder = audiorecorder(fc, 16, 1);
 recordblocking(recorder, Tr);
 sig = getaudiodata(recorder);
+sig = sig';
+fprintf('End Recording\n')
 
+samples = length(sig);
+df = fc/samples;
+f = -fc/2:df:fc/2-df;
 
+subplot(1,2,1), plot(f,abs(fftshift(fft(sig))).^2), title('PSD segnale al ricevitore'), xlabel('f (Hz)');
 
 %% Demodulazione e filtraggio segnale
 
@@ -63,6 +70,8 @@ sig_ref = sigFilter(sig_ref, H_matched);
 
 sig = sigAlign(sig_ref, sig);
 sig = sigNorm(sig, sig_ref);
+
+subplot(1,2,2), plot(f,abs(fftshift(fft(sig))).^2), title('PSD segnale demodulato e filtrato'), xlabel('f (Hz)');
 
 Bits_out = toBits(sig, sym2alpha, alpha2sym, SpS);
 

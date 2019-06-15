@@ -45,10 +45,10 @@ audiowrite('audio.wav', sig_out, fc);
 df = fc/samples;
 f = -fc/2:df:fc/2-df;
 
-subplot(2,2,1), plot(f, abs(fftshift(fft(sig))).^2);
-subplot(2,2,2), plot(f, abs(fftshift(fft(sig_out))).^2);
+subplot(1,2,1), plot(f, abs(fftshift(fft(sig))).^2), grid on, title('PSD segnale a banda base'), xlabel('f (Hz)');
+subplot(1,2,2), plot(f, abs(fftshift(fft(sig_out))).^2), grid on, title('PSD segnale con carrier'), xlabel('f (Hz)');
 
-
+%{
 sig_out_rx = [zeros(1,1e4), sig_out, zeros(1,2e4)];
 samples1 = length(sig_out_rx);
 t1 = [0:1:samples1-1]*Tc;
@@ -72,6 +72,8 @@ BER = ber(Bits, bits_out);
 
 eyediagram(sig_out_rx,SpS*2,SpS*2);
 eyediagram(signal_ref,SpS*2,SpS*2);
+
+%}
 
 %% Funzioni di utilità
 
