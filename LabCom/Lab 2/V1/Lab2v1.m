@@ -95,6 +95,8 @@ for i=1:length(EbN0_sim)
     BER_poles(2,i) = ber(Bits, bits_pole(2,:));
     BER_poles(3,i) = ber(Bits, bits_pole(3,:));
     
+    clear bits_matched
+    clear bits_pole
 end
 
 %% Plot delle BER
@@ -136,10 +138,10 @@ sig_out_pole = [
     sigFilter(sig_in, H_pole(3,:));
     ];
 
-%eyediagram(sig_out_matched,SpS*2,SpS*2);
-%eyediagram(sig_out_pole(1,:),SpS*2,SpS*2);
-%eyediagram(sig_out_pole(2,:),SpS*2,SpS*2);
-%eyediagram(sig_out_pole(3,:),SpS*2,SpS*2);
+eyediagram(sig_out_matched,SpS*2,SpS*2);
+eyediagram(sig_out_pole(1,:),SpS*2,SpS*2);
+eyediagram(sig_out_pole(2,:),SpS*2,SpS*2);
+eyediagram(sig_out_pole(3,:),SpS*2,SpS*2);
 
 
 %% Funzioni di utilità
