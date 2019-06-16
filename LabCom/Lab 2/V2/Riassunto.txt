@@ -1,0 +1,19 @@
+Parametri:
+
+Velocità di trasmissione bits: 100 Mbps (come da specifiche)
+Numero di bits trasmessi: 1e5
+Modlazione: 4-PAM NRZ antipodale
+Simboli: 00 01 11 10 (grey coding)
+Valori segnale: -3 -1 +1 +3
+SpS: 19 (scelto dispari per poter prendere il campione ideale dal segnale filtrato con filtro adattato e sufficientemente grande per evitare grosse oscillazioni dei segnali RC)
+Range Eb/N0: 2:20 dB
+
+Filtro adattato: sinc(f*T_simbolo)
+Filtri RC: 1/(1+(1i*f/polo)) con polo = [50,100,150] MHz
+
+Descrizione laboratorio:
+
+Lo svolgimento è analogo alla V1, eccetto che il segnale è stato modulato in 4-PAM invece che 2-PAM (utilizzando comunque gli stessi accorgimenti della versione precedente per quanto riguarda conversione in segnale elettrico, filtraggio, demodulazione con scelta dell'istante ideale e calcolo del BER).
+
+Si possono osservare gli stessi rapporti tra le varie curve dei BER corrispondenti ai vari filtri: il filtro adattato corrisponde ai calcoli teorici mentre i filtri RC presentano penalità crescenti al crescere della frequenza di filtro.
+Il confronto tra i grafici dei casi 2-PAM e 4-PAM dimostra anche come all'aumentare dei BpS (bits per simbolo) della modulazione aumentino anche le penalità del BER (come detto a lezione)

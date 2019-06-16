@@ -1,0 +1,23 @@
+Parametri:
+
+Bits: matricole converite cifra per cifra in 8 bits tramite comando matlab de2bi
+Modulazione: 2-PAM NRZ unipolare (come consigliato, utile per il recupero di fase durante la demodulazione)
+Carrier: sinusoide con frequenza di 2 kHz (come consigliato dalle istruzioni)
+Velocità di trasmissione: 100 bps (come consigliato)
+
+Frequenza di campionamento: 16 kHz (in modo da evitare deformazioni del segnale quando moltiplicato per il carrier)
+
+
+Descrizione laboratorio:
+
+E stata simulata la trasmissione di un segnale binario tramite comunicazione con cavo aux tra schede audio.
+
+Prima di procedere alla trasmissione del segnale tramite cavo sono stati simulati i processi al trasmettitore e al ricevitore all'interno dello stesso script matlab. Dopo il successo delle simulazione lo script è stato diviso in due parti: una per la generazione e modulazione del segnale e l'altra per la ricezione, demodulazione e filtraggio del segnale.
+
+(Vedi "PSD segnale al trasmettitore.png") Al lato trasmettitore il segnale è stato modulato in 2-PAM con le stesse tecniche del Lab 2 (riaggiustato per la versione unipolare). Inoltre, dato che le schede audio presentano una banda di taglio passa-alto a 20 Hz, il segnale è stato moltiplicato per il carrier sopra descritto in modo da poter spostare la PSD del segnale ed evitare dei tagli in frequenza. Lo script al trasmettitore salva il segnale in un file audio in modo da essere utilizzato anche 'offline' (nel nostro caso il file è stato salvato e trasmesso da un cellulare per pura questione pratica).
+
+(Vedi "PSD segnale al ricevitore.png") Al lato ricevitore lo script registra il segnale tramite l'ingresso del microfono della scheda audio e esso, per ricentrare la frequenza del segnale, viene moltiplicato di nuovo per il carrier. Per rimuovere gli artefatti in frequenza dovuti a una doppia moltiplicazione con il carrier il segnale viene moltiplicato per un filtro adattato. Viene inoltre generato di nuovo il segnale di partenza per poterlo confrontare con il segnale reale e calcolare il BER.
+
+Il segnale reale viene riallineato (comando matlab alignsignals) con il riferimento (anch'esso filtrato con filtro adattato) per poter permetterne il confronto. Inoltre, per rendere più facile la conversione da segnale a bit, la potenza del segnale reale viene normalizzata con quella del riferimento (essendosi abbassata dopo la trasmissione, moltiplicazione con il carrier e filtraggio).
+
+I segnali vengono convertiti in bit con gli stessi algoritmi e accorgimenti del Lab 2 (le soglie vengono però confrontate con i valori assoluti assunti dal segnale per poter permettere il recupero di fase) e confrontati per calcolare il BER. (Vedi BER.png) Si può constatare che la trasmissione è avvenuta con successo e senza errori (il BER infatti risulta pari a 0).

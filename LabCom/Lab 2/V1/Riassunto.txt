@@ -1,0 +1,26 @@
+Parametri:
+
+Velocità di trasmissione bits: 100 Mbps (come da specifiche)
+Numero di bits trasmessi: 1e5
+Modulazione: 2-PAM NRZ antipodale
+Simboli: 0 1
+Valori segnale: -1 +1
+SpS: 19 (scelto dispari per poter prendere il campione ideale dal segnale filtrato con filtro adattato e sufficientemente grande per evitare grosse oscillazioni dei segnali RC)
+Range Eb/N0: 2:15 dB
+
+Filtro adattato: sinc(f*T_simbolo)
+Filtri RC: 1/(1+(1i*f/polo)) con polo = [50,100,150] MHz
+
+
+Descrizione lab:
+
+E' stata simulata la trasmissione di un segnale modulato in PAM con aggiunta di AWGN (rumore gaussiano bianco additivo).
+
+Dopo la generazione dei bits (casuali), la conversione in segnale 2-PAM e la definizione dei filtri in base alla frequenza di campionamento (calcolata tramite SpS), è stato aggiunto il rumore additivo calcolato in base a diversi valori di Eb/N0 (rapporto tra energia del segnale e potenza del rumore) e filtrato il segnale con i vari filtri. Dopo averlo riconvertito in bits i vari segnali il BER per ogni valore di Eb/N0 è stato calcolato prendendo il rapporto tra la differenza dei bit prima e dopo l'elaborazione e il numero totale di bits.
+
+Per scegliere l'istante ideale per estrare il campione dal segnale e riconvertirlo in bits si sono osservati i diagrammi ad occhio e visto dove i vari livelli del segnale fossero più distanti possibile tra di loro. Per calcolare le soglie invece sono stati presi i punti medi tra i vari livelli assumibili dal segnale.
+
+Dai vari grafici delle BER (in funzione di Eb/N0) si può osservare come il filtro adattato offra prestazioni identiche ai calcoli teorici, mentre i filtri RC presentano penalità crescenti di Eb/N0 (visibili sul grafico al livello BER=1e-3) all'aumentare della frequenza del filtro.
+
+
+NOTE PER LA RELAZIONE: Eb/N0 (l'ultimo carattere è uno zero, non una O) sarebbe da scrivere in modo che la b e lo 0 siano a pedice (ancor meglio se si riesce a fare una frazione, ma non necessario)

@@ -4,7 +4,6 @@ close all
 %% Parametri
 
 MPAM = 2; 
-nbits = 1e4; % Numero di bit trasmessi
 Mbps = 100; % Velocità di trasmissione in Mbps
 fc = 16000; % Banda di simulazione (freq di campionamento)
 
