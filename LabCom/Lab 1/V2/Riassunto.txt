@@ -1,0 +1,22 @@
+Parametri:
+
+-Registrazione vocale
+Frequenza di campionamento: 8e3 Hz
+Durata registrazione: 5 s 
+
+-File audio
+Frequenza di campionamento: 11025 Hz
+Durata traccia audio: 13.8 s
+
+Bit di campionamento (entrambi i segnali): 4, 6, 8
+Campo probabilità di errore: 1e-9:1e-1
+
+
+Descrizione lab:
+
+Lo svolgimento è analogo a quello di V1 con l'unica differenza che al posto di un segnale casuale vengono analizzati due segnali audio reali: una voce registrata dal vivo durante l'esecuzione dello script matlab e un file audio (anch'esso una voce registrata)
+
+(Vedi "PSD e densità di probabilità.png") La psd presenta picchi conformi a quelli di una voce umana, mentre le densità di probabilità presentano una forma tipica dei segnali audio reali (due esponenziali decrescenti che partono dal centro)
+
+
+(Vedi SNR.png) A differenza di un segnale casuale un segnale reale è più soggetto a errori rispetto al calcolo teorico, come dimostrato dai grafici delle SNR dei due segnali (circa 20 dB), dovuto dall'utilizzo di una quantizzazione uniforme su un segnale con distribuzione di probabilità non uniforme. Una quantità di bit di quantizzazione maggiore però garantisce una migliore qualità della trasmissione del segnale.

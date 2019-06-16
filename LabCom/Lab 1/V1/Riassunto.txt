@@ -1,0 +1,19 @@
+Parametri:
+
+Ampiezza del segnale: 1
+Frequenza di campionamento: 1e6 Hz
+Bit di campionamento: 4, 6, 8
+Numero di campioni del segnale: 1e6
+Campo probabilità di errore: 1e-9:1e-1
+
+Descrizione lab:
+
+Abbiamo simulato la trasmissione di un segnale casuale (di ampiezza -1:+1) tramite un canale BSC (comando matlab bsc) per diverse probabilità di errore. La frequenza di campionamento è stata scelta arbitrariamente.
+
+Inizialmente sono stati analizzati lo spettro di potenza e la densità di probabilità del segnale: il primo risulta casuale (in corrispondenza alla casualità del segnale stesso) mentre il secondo (creato con il comando histogram) dimostra come il segnale sia effettivamente un segnale casuale con distribuzione di probabilità uniforme (vedi "PSD e densità di probabilità.png").
+
+Il segnale è stato poi quantizzato (in diversi numeri di bit provati uno alla volta tramite un ciclo for) e trasmesso tramite canale BSC una volta per ogni differente probabilità di errore, calcolando poi l'SNR tra il segnale in ingresso al BSC e la differenza (o errore) tra il segnale d'ingresso e d'uscita (comando matlab snr).
+
+Dai grafici (vedi SNR.png) si può confermare come le SNR del segnale per le varie probabilità e per i vari bit di campionamento sono conformi alla curva SNR teorica. I grafici dimostrano anche come una maggior quantità di bit di campionamento offra delle SNR migliori (maggior valore in dB).
+
+

@@ -3,11 +3,11 @@ close all
 
 %% Parametri
 MPAM = 4; 
-nbits = 1e6; % Numero di bit trasmessi
+nbits = 1e5; % Numero di bit trasmessi
 Mbps = 100; % Velocità di trasmissione in Mbps
 SpS = 19; % Campioni per simbolo
 
-a = 2; b = 10; % dB iniziali e finali Eb/N0
+a = 2; b = 20; % dB iniziali e finali Eb/N0
 EbN0_sim_db = a:1:b; % Eb/N0 per simulazione (in dB)
 EbN0_sim = 10.^(EbN0_sim_db./10); % Eb/N0 per simulazione (in valore assoluto)
 EbN0_theory_db = a:1e-5:b; % Eb/N0 per calcolo teorico (in dB)
@@ -82,11 +82,11 @@ for i=1:length(EbN0_sim)
         ];
     
     % Conversione da segnali a bits
-    bits_matched = toBits(sig_out_matched, sym2alpha, alpha2sym, SpS);
+    bits_matched = toBits(sig_out_matched, sym2alpha, alpha2sym, SpS, ceil(SpS/2));
     bits_pole = [
-        toBits(sig_out_pole(1,:), sym2alpha, alpha2sym, SpS);
-        toBits(sig_out_pole(2,:), sym2alpha, alpha2sym, SpS);
-        toBits(sig_out_pole(3,:), sym2alpha, alpha2sym, SpS);
+        toBits(sig_out_pole(1,:), sym2alpha, alpha2sym, SpS, SpS-1);
+        toBits(sig_out_pole(2,:), sym2alpha, alpha2sym, SpS, SpS-1);
+        toBits(sig_out_pole(3,:), sym2alpha, alpha2sym, SpS, SpS-1);
     ];
     
     % Calcolo BER segnali
@@ -148,7 +148,7 @@ eyediagram(sig_out_pole(3,:),SpS*2,SpS*2);
 %% Funzioni di utilità
 
 % Converte un segnale elettrico in bits
-function bits = toBits(sig, sym2alpha, alpha2sym, SpS)
+function bits = toBits(sig, sym2alpha, alpha2sym, SpS, instant)
 % Creazione delle soglie 
 th = [];
 for i=1:length(sym2alpha)-1
@@ -159,7 +159,7 @@ BpS = length(alpha2sym(1,:));
 bits = NaN*ones(1,length(sig)/SpS*BpS);
 % Converte i coefficienti in simboli
 for i=0:length(sig)/SpS-1
-    alphas = sig(i*SpS+ceil(SpS/2));
+    alphas = sig(i*SpS+instant);
     for j=1:length(th)
         sym = alpha2sym(j+1, :);
         if(alphas <= th(j)) 

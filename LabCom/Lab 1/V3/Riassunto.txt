@@ -1,0 +1,15 @@
+Parametri:
+
+Come V2
+
+Descrizione lab:
+
+Svolgimento analogo al V2, ma con l'utilizzo di diversi metodi di quantizzazione oltre all'uniforme.
+
+Come osservato nel lab precedente vi è una perdità di circa 20 dB nella SNR per via dell'utilizzo di una quantizzazione uniforme su un segnale con densità di probabilità non uniforme.
+
+I due algoritmi di quantizzazione utilizzati in questo lab sono l'algoritmo di Lloyd e la tecnica del companding.
+
+Il primo (comando matlab lloyds) consiste nel rendere gli intervalli di campionamento più densi nelle zone di segnale con maggiore densità di probabilità, mentre il secondo (comando matlab compand) consiste nel trasformare il segnale in uno non lineare in modo da simulare una distribuzione non uniforme degli intervalli di campionamento.
+
+Dai grafici (vedi entrambi gli screen) si può vedere come entrambi gli algoritmi presentino prestazioni maggiori rispetto alla distribuzione uniforme in tutte le quantizzazioni. In particolare l'algoritmo di Lloyd presenta delle prestazioni nettamente superiori per un ridotto numero di bit di quantizzazione.
