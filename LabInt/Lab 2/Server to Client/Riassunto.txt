@@ -1,0 +1,7 @@
+-Ack: il server invia solamente dati al client, quindi il numero di ACK rimane invariato, eccetto che all'istante 18.36, ovvero quando il client sopprime l'output su schermo e invia un pacchetto PSH (il server invia l'ACK corrispondente).
+
+-Seq: l'andamento è identico a quello degli ACK inviati dal client. Durante l'attivazione della modalità di comando il server invia solo pacchetti Keep-Alive per mantenere aperta la connessione, senza quindi aumentare il numero di sequenza (vedi Keep-Alive.png). 
+
+-Len: la lunghezza dei pacchetti rimane costante a 1448 (massima quantità di dati inviabile tramite TCP) eccetto quando viene attivata la modalità di comando (2 e 4): i pacchetti Keep-Alive inviati dal server hanno appunto lunghezza dati nulla.
+
+-Win: non avendo necessità di ricevere dati la finestra di ricezione del server rimane costante.

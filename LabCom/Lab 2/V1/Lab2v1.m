@@ -114,7 +114,7 @@ grid on
 
 %% Plot diagrammi ad occhio
 
-sig_in = sig_in(1:1e4);
+sig_in = sig_in(1:(1e4-mod(1e4,SpS)));
 samples = length(sig_in);
 
 % Valore asse delle frequenze
